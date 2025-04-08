@@ -2,8 +2,8 @@
     /* Colors */
     --bg-color: #AF9E82;
     --text-color: #ffffff;
-    --primary-color: #3CFF3C;   
-    --secondary-color: #A62ED5;
+    --primary: #3CFF3C;
+    --secondary: #A62ED5;
 
     /* Size */
     --size-xs: 4px;
