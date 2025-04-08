@@ -1,7 +1,9 @@
 :root { 
     /* Colors */
-    --bg-color: #3498db;
+    --bg-color: #AF9E82;
     --text-color: #ffffff;
+    --primary-color: #3CFF3C;   
+    --secondary-color: #A62ED5;
 
     /* Size */
     --size-xs: #ffffff;
