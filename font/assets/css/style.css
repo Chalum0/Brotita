@@ -1,0 +1,11 @@
+:root { 
+    /* Colors */
+    --bg-color: #3498db;
+    --text-color: #ffffff;
+
+    /* Size */
+    --size-xs: #ffffff;
+    --size-sm: #ffffff;
+    --size-md: #ffffff;
+    --size-xl: #ffffff;
+}
