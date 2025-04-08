@@ -5,6 +5,8 @@ class Enemy {
       this.radius = 15;
       this.speed = 1.5;
       this.color = "red";
+      this.health = 2;
+      this.strength = 20;
     }
   
     update(targetX, targetY) {
@@ -21,6 +23,10 @@ class Enemy {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    damage(amount) {
+        this.health -= amount;
     }
   
     // Vérifier collision avec une autre entité
