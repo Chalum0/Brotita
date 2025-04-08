@@ -9,7 +9,14 @@
     --size-xs: 4px;
     --size-sm: 8px;
     --size-md: 16px;
-    --size-xl: 32px;
+    --size-lg: 32px;
+    --size-xl: 64px;
+    
+    --text-xs: 0.5vw;
+    --text-sm: 1vw;
+    --text-md: 2vw;
+    --text-lg: 4vw;
+    --text-xl: 8vw;
 }
 
 html, body {
