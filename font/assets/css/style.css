@@ -6,8 +6,8 @@
     --secondary-color: #A62ED5;
 
     /* Size */
-    --size-xs: #ffffff;
-    --size-sm: #ffffff;
-    --size-md: #ffffff;
-    --size-xl: #ffffff;
+    --size-xs: 4px;
+    --size-sm: 8px;
+    --size-md: 16px;
+    --size-xl: 32px;
 }
