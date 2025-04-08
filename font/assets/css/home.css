@@ -6,7 +6,20 @@
 
 .selector{
     height: 100vh;
-    width: 50vw;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--size-xl);
+    color: var(--text-color);
+    transition: 1s;
+    z-index: 1;
+    font-family: var(--title-font);
+}
+
+.selector:hover{
+    transform: scale(1.1);
+    z-index: 2;
 }
 
 .solo{
