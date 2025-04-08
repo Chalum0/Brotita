@@ -4,14 +4,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const player = {
-  x: 0,
-  y: 0,
-  radius: 20,
-  color: "blue",
-  health: 100,
-  speed: 3,
-};
+// Importer la classe Player
+const player = new Player();
 
 const keys = {
   ArrowUp: false,
@@ -20,15 +14,17 @@ const keys = {
   ArrowRight: false
 };
 
-const enemies = [];
+let enemies = [];
 let bullets = [];
 
 function spawnEnemy() {
   const angle = Math.random() * 2 * Math.PI;
   const distance = Math.max(canvas.width, canvas.height) / 1.5;
-  const x = Math.cos(angle) * distance;
-  const y = Math.sin(angle) * distance;
-  enemies.push({ x, y, radius: 15, speed: 1.5, color: "red" });
+  const x = canvas.width/2 + Math.cos(angle) * distance;
+  const y = canvas.height/2 + Math.sin(angle) * distance;
+  
+  // Utiliser la classe Enemy au lieu d'un objet littéral
+  enemies.push(new Enemy(x, y));
 }
 
 function shootBullet() {
@@ -58,31 +54,27 @@ function shootBullet() {
       dy: Math.sin(angle),
       color: "white"
     });
-  }
+}
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function updatePlayer() {
-  if (keys.ArrowUp) player.y -= player.speed;
-  if (keys.ArrowDown) player.y += player.speed;
-  if (keys.ArrowLeft) player.x -= player.speed;
-  if (keys.ArrowRight) player.x += player.speed;
+  // Utiliser la méthode update de la classe Player
+  player.update(keys);
 }
 
 function update() {
   updatePlayer();
 
   enemies.forEach(enemy => {
-    const dx = player.x - enemy.x;
-    const dy = player.y - enemy.y;
-    const angle = Math.atan2(dy, dx);
-    enemy.x += Math.cos(angle) * enemy.speed;
-    enemy.y += Math.sin(angle) * enemy.speed;
+    // Utiliser la méthode update de la classe Enemy
+    enemy.update(player.x, player.y);
 
-    if (distance(enemy, player) < enemy.radius + player.radius) {
-      player.health -= 0.5;
+    // Utiliser la méthode collidesWith de la classe Enemy
+    if (enemy.collidesWith(player)) {
+      player.damage(0.5);
     }
   });
 
@@ -105,8 +97,8 @@ function update() {
     }
   }
 
-    [...bulletsToRemove].sort((a, b) => b - a).forEach(i => bullets.splice(i, 1));
-    [...enemiesToRemove].sort((a, b) => b - a).forEach(j => enemies.splice(j, 1));
+  [...bulletsToRemove].sort((a, b) => b - a).forEach(i => bullets.splice(i, 1));
+  [...enemiesToRemove].sort((a, b) => b - a).forEach(j => enemies.splice(j, 1));
   
 
   bullets = bullets.filter(b =>
@@ -121,16 +113,12 @@ function draw() {
   ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
 
-  ctx.fillStyle = player.color;
-  ctx.beginPath();
-  ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
-  ctx.fill();
+  // Utiliser la méthode draw de la classe Player
+  player.draw(ctx);
 
   enemies.forEach(enemy => {
-    ctx.fillStyle = enemy.color;
-    ctx.beginPath();
-    ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
-    ctx.fill();
+    // Utiliser la méthode draw de la classe Enemy
+    enemy.draw(ctx);
   });
 
   bullets.forEach(bullet => {
@@ -150,7 +138,7 @@ function draw() {
 function gameLoop() {
   update();
   draw();
-  if (player.health > 0) {
+  if (player.isAlive()) {
     requestAnimationFrame(gameLoop);
   } else {
     alert("Game Over!");
