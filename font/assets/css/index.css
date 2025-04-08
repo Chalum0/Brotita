@@ -1,0 +1,14 @@
+body{
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    
+}
+
+.title{
+
+}
+.player_contain{
+
+}
