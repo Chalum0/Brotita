@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Wallpoet&display=swap');
+
 :root { 
     /* Colors */
     --bg-color: #AF9E82;
@@ -9,5 +11,30 @@
     --size-xs: 4px;
     --size-sm: 8px;
     --size-md: 16px;
-    --size-xl: 32px;
+    --size-lg: 32px;
+    --size-xl: 64px;
+    
+    --text-xs: 0.5vw;
+    --text-sm: 1vw;
+    --text-md: 2vw;
+    --text-lg: 4vw;
+    --text-xl: 8vw;
+
+    --title-font: "Wallpoet", sans-serif;
+}
+
+/* Global Styles */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.text-primary {
+    color: var(--primary);
+}
+.text-secondary {
+    color: var(--secondary);
 }
