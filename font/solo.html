@@ -274,18 +274,29 @@
         });
     });
     
-    // Gestion du bouton Play
     document.getElementById('playButton').addEventListener('click', function() {
-        // Récupérer les indices des sélections
-        const weaponIndex = Array.from(weaponItems).indexOf(selectedWeapon);
-        const characterIndex = Array.from(characterItems).indexOf(selectedCharacter);
-        
-        // Vous pouvez rediriger vers la page du jeu avec ces informations
-        console.log(`Jeu démarré avec l'arme ${weaponIndex + 1} et le personnage ${characterIndex + 1}`);
-        // Exemple: window.location.href = `game.html?weapon=${weaponIndex + 1}&character=${characterIndex + 1}`;
-        // Stoque les stats de l'arme et du personnage dans le localStorage
-        localStorage.setItem('selectedWeapon', selectedWeapon.getAttribute('data-char'));
-        localStorage.setItem('selectedCharacter', selectedCharacter.getAttribute('data-char'));
+        // Vérifier que les sélections sont faites
+        if (selectedWeapon && selectedCharacter) {
+            // Stocker les données du personnage
+            localStorage.setItem('selectedCharacter', selectedCharacter.getAttribute('data-char'));
+            
+            // Créer un inventaire avec l'arme sélectionnée
+            const inventory = [
+                JSON.parse(selectedWeapon.getAttribute('data-char'))
+            ];
+            
+            // Stocker l'inventaire dans localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            
+            // Calculer et stocker les stats totales
+            const weaponStats = JSON.parse(selectedWeapon.getAttribute('data-char'));
+            const charStats = JSON.parse(selectedCharacter.getAttribute('data-char'));
+            const totalStats = weaponStats.map((stat, index) => stat + charStats[index]);
+            localStorage.setItem('playerStats', JSON.stringify(totalStats));
+            
+            // Rediriger vers la page de jeu
+            window.location.href = 'game.html';
+        }
     });
 });
     </script>
@@ -321,17 +332,6 @@
             charStats = stats; 
             updateStats();
         }
-    </script>
-
-    <script>
-        let playButton = document.getElementById('playButton');
-        playButton.addEventListener('click', function() {
-            // Récupérer les stats de l'arme et du personnage sélectionnés
-            const selectedWeapon = document.querySelector('.weapons .items.selected');
-            const selectedCharacter = document.querySelector('.characters .items.selected');
-            
-            
-        });
     </script>
 </body>
 </html>
