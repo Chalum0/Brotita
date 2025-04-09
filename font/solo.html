@@ -101,42 +101,42 @@
                     </div>
                     <div
                         class="items"
-                        data-char="[0, 0, 3, 2, 2, 2, -3]"
+                        data-char="[0, 0, 2, 2, 2, 2, -3]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/5.png" alt="">
                     </div>
                     <div
                         class="items"
-                        data-char="[1, 2, 3, 4, 5, 6, 7]"
+                        data-char="[0, 0, 2, 2, 2, -1, 1]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/6.png" alt="">
                     </div>
                     <div
                         class="items"
-                        data-char="[1, 2, 3, 4, 5, 6, 7]"
+                        data-char="[2, 3, 3, 3, 3, 3, -5]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/7.png" alt="">
                     </div>
                     <div
                         class="items"
-                        data-char="[1, 2, 3, 4, 5, 6, 7]"
+                        data-char="[-1, 0, 1.5, 4, 1, 5, 3]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/8.png" alt="">
                     </div>
                     <div
                         class="items"
-                        data-char="[1, 2, 3, 4, 5, 6, 7]"
+                        data-char="[1, 1, 1, 1, 1, 1, 10]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/9.png" alt="">
                     </div>
                     <div
                         class="items"
-                        data-char="[100, 100, 100, 100, 100, 100, 100]"
+                        data-char="[-1, -1, -1, -1, -1, -1, -1]"
                         onclick="updateStatsWeapons(this)"
                     >
                         <img src="./assets/img/weapons/10.png" alt="">
@@ -147,7 +147,7 @@
                 <div class="grid">
                     <div 
                     class="items"
-                    data-char="[1, 2, 3, 4, 5, 6, 7]"
+                    data-char="[100, 5, 1, 1, 1, 1, 1]"
                     onclick="updateStatsChar(this)"
                     >
                         <img src="./assets/img/bro/1.png" alt="">
@@ -283,6 +283,9 @@
         // Vous pouvez rediriger vers la page du jeu avec ces informations
         console.log(`Jeu démarré avec l'arme ${weaponIndex + 1} et le personnage ${characterIndex + 1}`);
         // Exemple: window.location.href = `game.html?weapon=${weaponIndex + 1}&character=${characterIndex + 1}`;
+        // Stoque les stats de l'arme et du personnage dans le localStorage
+        localStorage.setItem('selectedWeapon', selectedWeapon.getAttribute('data-char'));
+        localStorage.setItem('selectedCharacter', selectedCharacter.getAttribute('data-char'));
     });
 });
     </script>
@@ -318,6 +321,17 @@
             charStats = stats; 
             updateStats();
         }
+    </script>
+
+    <script>
+        let playButton = document.getElementById('playButton');
+        playButton.addEventListener('click', function() {
+            // Récupérer les stats de l'arme et du personnage sélectionnés
+            const selectedWeapon = document.querySelector('.weapons .items.selected');
+            const selectedCharacter = document.querySelector('.characters .items.selected');
+            
+            
+        });
     </script>
 </body>
 </html>
