@@ -1,5 +1,5 @@
 class Player {
-  constructor(x = 0, y = 0) {
+  constructor(i, x = 0, y = 0) {
     this.x = x;
     this.y = y;
     this.radius = 20;
@@ -15,6 +15,15 @@ class Player {
     this.debug = true;
     this.strength = 2;
     this.invincible = false;
+
+    this.inventory = new Inventory();
+    i.forEach((weapon) => {
+
+      const weapon1 = new Weapon(...weapon)
+
+      this.inventory.addWeapon(weapon1)
+    })
+    console.log(this.inventory.weapons);
   }
   
   update(keys) {
@@ -22,6 +31,21 @@ class Player {
     if (keys.ArrowDown) this.y += this.speed;
     if (keys.ArrowLeft) this.x -= this.speed;
     if (keys.ArrowRight) this.x += this.speed;
+
+    if (this.x > window.innerWidth/2) {
+      this.x = window.innerWidth/2;
+    }
+    if (this.x < -window.innerWidth/2) {
+      this.x = -window.innerWidth/2;
+    }
+
+    if (this.y > window.innerHeight/2) {
+      this.y = window.innerHeight/2;
+    }
+    if (this.y < -window.innerHeight/2) {
+      this.y = -window.innerHeight/2;
+    }
+
   }
   
   draw(ctx) {
@@ -55,5 +79,6 @@ class Player {
   heal(amount) {
     this.health = Math.min(this.health + amount, this.max_health)
   }
+
 
 }
