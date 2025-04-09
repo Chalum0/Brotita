@@ -1,0 +1,207 @@
+body {
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    font-family: var(--defaut-font);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.content {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+/* Left section - Stats */
+.left {
+    width: 33%;
+    background-color: var(--secondary);
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--secondary);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: var(--secondary);
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--primary);
+}
+
+.header h4 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.4rem;
+    font-family: var(--title-font);
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
+.stats {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    gap: 10px;
+}
+
+.ico {
+    width: 30px;
+    height: 30px;
+    background-color: var(--secondary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ico img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.stat p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+    min-width: 30px;
+    text-align: center;
+    color: var(--primary);
+}
+
+.stat label {
+    font-size: 0.9rem;
+    color: var(--primary);
+    flex-grow: 1;
+}
+
+/* Middle section */
+/* ...existing code... */
+
+/* Middle section */
+.middle {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.weapons, .characters {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    padding: 16px;
+    overflow: auto;
+}
+
+/* Grille standard pour les personnages */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+}
+
+/* Grille spécifique pour les armes - sur une seule ligne */
+.weapons .grid {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+}
+
+/* Taille réduite pour les éléments d'arme */
+.weapons .items {
+    max-width: 50px;
+    aspect-ratio: 1/1;
+}
+
+.items {
+    aspect-ratio: 1/1;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* ...existing code... */
+
+.items:hover {
+    background-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.items img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .left {
+        width: 100%;
+        max-height: 300px;
+    }
+    
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .weapons .grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* ...existing code... */
+
+/* Styles pour les éléments sélectionnés */
+.items.selected {
+    background-color: var(--secondary);
+    border: 2px solid var(--secondary);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--secondary);
+}
+
+/* Style du bouton Play */
+#playButton {
+    display: none;
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-family: var(--title-font);
+    padding: 16px 32px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 8px auto;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+#playButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--secondary);
+}

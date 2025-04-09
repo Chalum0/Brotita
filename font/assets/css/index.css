@@ -31,7 +31,7 @@ body{
 }
 
 .player_contain > .player {
-    background-image: url(../img/bro/brotita.png);
+    background-image: url(../img/bro/orgine.png);
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
