@@ -13,8 +13,6 @@ class EnemyManager {
   }
 
   anyEnemies() {
-    console.log(this.enemies.length);
-    console.log(this.enemies[0]);
     return this.enemies.length > 0;
   }
 
@@ -28,12 +26,11 @@ class EnemyManager {
   }
 
   updateEnemies(player) {
-    console.log(player.x, player.y);
 
     this.enemies.sort((a, b) => {
+      // console.log("a", player)
       const distA = distance(a, player);
       const distB = distance(b, player);
-      console.log(distA - distB);
       return distA - distB;
     });
     let damages = 0

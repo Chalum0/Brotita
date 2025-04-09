@@ -5,19 +5,17 @@ class Enemy {
       this.radius = 15;
       this.speed = 1.5;
       this.color = "red";
-      this.health = 2;
+      this.health = 3;
       this.strength = 20;
     }
   
     update(targetX, targetY) {
-      // Déplacement vers le joueur
       const dx = targetX - this.x;
       const dy = targetY - this.y;
       const angle = Math.atan2(dy, dx);
       this.x += Math.cos(angle) * this.speed;
       this.y += Math.sin(angle) * this.speed;
     }
-  
     draw(ctx) {
       ctx.fillStyle = this.color;
       ctx.beginPath();
@@ -26,7 +24,11 @@ class Enemy {
     }
 
     damage(amount) {
-        this.health -= amount;
+      this.health -= amount;
+    }
+
+    shouldDie() {
+      return this.health <= 0;
     }
   
     // Vérifier collision avec une autre entité
