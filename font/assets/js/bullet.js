@@ -1,5 +1,5 @@
 class Bullet {
-  constructor(x, y, tx, ty, strength) {
+  constructor(x, y, tx, ty) {
     this.x = x;
     this.y = y;
     this.radius = 5;
@@ -12,7 +12,6 @@ class Bullet {
     this.dy = Math.sin(angle) * this.speed;
 
     this.color = "white";
-    this.strength = strength;
   }
 
   draw(ctx) {
@@ -23,6 +22,7 @@ class Bullet {
   }
 
   update(){
+    console.log(this.dx, this.dy);
     this.x += this.dx;
     this.y += this.dy;
   }
