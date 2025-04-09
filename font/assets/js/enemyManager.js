@@ -36,7 +36,13 @@ class EnemyManager {
       const distB = distance(b, player);
       return distA - distB;
     });
-    let damages = 0
+    let damages = 0;
+
+    // Ne pas déplacer les ennemis si la vague est terminée
+    if (typeof waveCompleted !== 'undefined' && waveCompleted) {
+      return damages;
+    }
+
     this.enemies.forEach(enemy => {
       enemy.update(player.x, player.y);
 
@@ -55,6 +61,17 @@ class EnemyManager {
 
   despawnAll() {
     this.enemies = [];
+  }
+
+  despawnOneEnemy() {
+    if (this.enemies.length > 0) {
+        // Ajoutez un petit effet visuel si vous le souhaitez
+        
+        // Supprimer le premier ennemi
+        this.enemies.shift();
+        return true;
+    }
+    return false;
   }
 
   handleEnemyDeath(enemy, index) {

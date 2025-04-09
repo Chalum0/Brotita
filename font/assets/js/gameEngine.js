@@ -110,7 +110,10 @@ window.addEventListener("keyup", e => {
 
 // Intervalle de spawn des ennemis
 const enemySpawnInterval = setInterval(() => {
-  enemies.spawnEnemy();
+  // Ne pas spawner d'ennemis si la vague est terminée
+  if (typeof waveCompleted === 'undefined' || !waveCompleted) {
+      enemies.spawnEnemy();
+  }
 }, 1000);
 
 // Intervalle de tir des balles

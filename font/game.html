@@ -36,6 +36,10 @@
         let timer = 20;
         let waveIndex = 0;
         let totalCoins = 0;
+        let waveCompleted = false;
+
+        let enemyDespawnInterval;
+        let isVictoryModalShown = false;
     </script>
     <script src="./assets/js/functions.js"></script>
     <script src="./assets/js/controls.js"></script>
@@ -56,15 +60,35 @@
                 document.querySelector('.i-wave').innerHTML = waveIndex;
                 timer--;
                 document.querySelector('.timer').innerHTML = timer;
-            } else {
-                // Victoire - si le joueur est en vie
-                if (player.isAlive()) {
-                    document.getElementById('coinsCollected').textContent = totalCoins;
-                    showVictoryModal();
-                    clearInterval(timerInterval);
-                }
+            } else if (!waveCompleted && player.isAlive()) {
+                // Marquer la vague comme complétée
+                waveCompleted = true;
+                
+                // Arrêter le spawn de nouveaux ennemis
+                clearInterval(enemySpawnInterval);
+                
+                // Commencer le despawn progressif des ennemis
+                startEnemyDespawn();
             }
         }, 1000);
+
+        function startEnemyDespawn() {
+            // Intervalle pour faire disparaître un ennemi toutes les 300ms
+            enemyDespawnInterval = setInterval(() => {
+                if (enemies.getEnemies().length > 0) {
+                    // Supprimer le premier ennemi de la liste
+                    enemies.despawnOneEnemy();
+                } else {
+                    // Tous les ennemis ont disparu, afficher le modal de victoire
+                    clearInterval(enemyDespawnInterval);
+                    if (!isVictoryModalShown) {
+                        isVictoryModalShown = true;
+                        document.getElementById('coinsCollected').textContent = totalCoins;
+                        showVictoryModal();
+                    }
+                }
+            }, 300);
+        }
         
         // Fonctions pour les modaux
         function showVictoryModal() {
