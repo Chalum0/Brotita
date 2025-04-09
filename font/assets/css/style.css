@@ -3,9 +3,8 @@
 :root { 
     /* Colors */
     --bg-color: #AF9E82;
-    --text-color: #ffffff;
-    --primary: #3CFF3C;
-    --secondary: #A62ED5;
+    --primary: #ffffff;
+    --secondary: #D52E31;
 
     /* Size */
     --size-xs: 4px;
