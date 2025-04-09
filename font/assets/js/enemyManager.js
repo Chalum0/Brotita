@@ -22,7 +22,8 @@ class EnemyManager {
     const angle = Math.random() * 2 * Math.PI;
     const distance = Math.max(canvas.width, canvas.height) / 1.5;
     const x = canvas.width/2 + Math.cos(angle) * distance;
-    const y = canvas.height/2 + Math.sin(angle) * distance;
+    const y = canvas.height/2 + Math.sin(angle) * distance;setInterval(() => {bullets.shoot(enemies.getEnemies()[0], player)}, 300);
+
     this.addEnemy(new Enemy(x, y))
   }
 
@@ -32,8 +33,6 @@ class EnemyManager {
     this.enemies.sort((a, b) => {
       const distA = distance(a, player);
       const distB = distance(b, player);
-      // const distA = (a.x - player.x) ** 2 + (a.y - player.y) ** 2;
-      // const distB = (b.x - player.x) ** 2 + (b.y - player.y) ** 2;
       console.log(distA - distB);
       return distA - distB;
     });

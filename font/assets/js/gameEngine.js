@@ -64,5 +64,5 @@ window.addEventListener("keyup", e => {
 setInterval(() => {
   enemies.spawnEnemy()
 }, 1000)
-setInterval(() => {bullets.shoot(enemies.getEnemies()[0], player)}, 300);
+setInterval(() => bullets.shoot(enemies.getEnemies(), player), 500);
 gameLoop();
