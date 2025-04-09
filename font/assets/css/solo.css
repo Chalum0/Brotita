@@ -2,7 +2,7 @@ body {
     background-color: var(--bg-color);
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: var(--defaut-font);
     min-height: 100vh;
     overflow: hidden;
 }
@@ -19,9 +19,9 @@ body {
 /* Left section - Stats */
 .left {
     width: 33%;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--secondary);
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px var(--secondary);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -55,7 +55,7 @@ body {
     display: flex;
     align-items: center;
     padding: 10px;
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     gap: 10px;
 }
@@ -92,6 +92,9 @@ body {
 }
 
 /* Middle section */
+/* ...existing code... */
+
+/* Middle section */
 .middle {
     flex-grow: 1;
     display: flex;
@@ -104,14 +107,26 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     padding: 16px;
-    
     overflow: auto;
 }
 
+/* Grille standard pour les personnages */
 .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 15px;
+}
+
+/* Grille spécifique pour les armes - sur une seule ligne */
+.weapons .grid {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+}
+
+/* Taille réduite pour les éléments d'arme */
+.weapons .items {
+    max-width: 50px;
+    aspect-ratio: 1/1;
 }
 
 .items {
@@ -126,8 +141,10 @@ body {
     cursor: pointer;
 }
 
+/* ...existing code... */
+
 .items:hover {
-    background-color: var(--secondary);
+    background-color: var(--primary);
     transform: scale(1.05);
 }
 
@@ -151,4 +168,40 @@ body {
     .grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .weapons .grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* ...existing code... */
+
+/* Styles pour les éléments sélectionnés */
+.items.selected {
+    background-color: var(--secondary);
+    border: 2px solid var(--secondary);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--secondary);
+}
+
+/* Style du bouton Play */
+#playButton {
+    display: none;
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-family: var(--title-font);
+    padding: 16px 32px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 8px auto;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+#playButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--secondary);
 }
