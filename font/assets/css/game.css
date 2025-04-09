@@ -1,12 +1,94 @@
 body{
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 #gameCanvas {
-    display: block;
-  }
+  display: block;
+}
+
+.pannel{
+  position: fixed;
+  top: 20px;
+  color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Styles pour les modaux */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); }
+  to { transform: scale(1); }
+}
+
+.modal-content h2 {
+  font-family: var(--title-font);
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+}
+
+.modal-content p {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.modal-content button {
+  background-color: var(--secondary);
+  color: var(--primary);
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  font-family: var(--title-font);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+  transform: scale(1.05);
+}
+
+.victory {
+  border: 4px solid #4CAF50;
+}
+
+.defeat {
+  border: 4px solid var(--secondary);
+}

@@ -8,16 +8,114 @@
     <link rel="stylesheet" href="./assets/css/game.css">
 </head>
 <body>
+    <div class="pannel">
+        <h4>WAVE <b class="i-wave">#</b></h4>
+        <h1 class="timer">30</h1>
+    </div>
     <canvas id="gameCanvas"></canvas>
+
+    <div id="victoryModal" class="modal">
+        <div class="modal-content victory">
+            <h2>WAVE COMPLETED!</h2>
+            <p>You survived the wave!</p>
+            <p>Coins collected: <span id="coinsCollected">0</span></p>
+            <button id="shopButton">Go to Shop</button>
+        </div>
+    </div>
+    
+    <div id="defeatModal" class="modal">
+        <div class="modal-content defeat">
+            <h2>GAME OVER</h2>
+            <p>You died at wave <span id="waveReached">0</span></p>
+            <button id="restartButton">Restart Game</button>
+            <button id="menuButton">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        let timer = 20;
+        let waveIndex = 0;
+        let totalCoins = 0;
+        let waveCompleted = false;
+
+        let enemyDespawnInterval;
+        let isVictoryModalShown = false;
+    </script>
     <script src="./assets/js/functions.js"></script>
     <script src="./assets/js/controls.js"></script>
     <script src="./assets/js/weapon.js"></script>
     <script src="./assets/js/bullet.js"></script>
     <script src="./assets/js/inventory.js"></script>
     <script src="./assets/js/player.js"></script>
+    <script src="./assets/js/tree.js"></script>
+    <script src="./assets/js/coin.js"></script>
     <script src="./assets/js/enemy.js"></script>
     <script src="./assets/js/enemyManager.js"></script>
+    <script src="./assets/js/coinManager.js"></script>
     <script src="./assets/js/bulletManager.js"></script>
     <script src="./assets/js/gameEngine.js"></script>
+
+    <script>
+        let timerInterval = setInterval(() => {
+            if (timer > 0) {
+                document.querySelector('.i-wave').innerHTML = waveIndex;
+                timer--;
+                document.querySelector('.timer').innerHTML = timer;
+            } else if (!waveCompleted && player.isAlive()) {
+                // Marquer la vague comme complétée
+                waveCompleted = true;
+                
+                // Arrêter le spawn de nouveaux ennemis
+                clearInterval(enemySpawnInterval);
+                
+                // Commencer le despawn progressif des ennemis
+                startEnemyDespawn();
+            }
+        }, 1000);
+
+        function startEnemyDespawn() {
+            // Intervalle pour faire disparaître un ennemi toutes les 300ms
+            enemyDespawnInterval = setInterval(() => {
+                if (enemies.getEnemies().length > 0) {
+                    // Supprimer le premier ennemi de la liste
+                    enemies.despawnOneEnemy();
+                } else {
+                    // Tous les ennemis ont disparu, afficher le modal de victoire
+                    clearInterval(enemyDespawnInterval);
+                    if (!isVictoryModalShown) {
+                        isVictoryModalShown = true;
+                        document.getElementById('coinsCollected').textContent = totalCoins;
+                        showVictoryModal();
+                    }
+                }
+            }, 300);
+        }
+        
+        // Fonctions pour les modaux
+        function showVictoryModal() {
+            document.getElementById('victoryModal').style.display = 'flex';
+            document.getElementById('waveReached').textContent = waveIndex;
+            // Sauvegarder le nombre de pièces pour le shop
+            localStorage.setItem('playerCoins', totalCoins);
+        }
+        
+        function showDefeatModal() {
+            document.getElementById('defeatModal').style.display = 'flex';
+            document.getElementById('waveReached').textContent = waveIndex;
+        }
+        
+        // Boutons des modaux
+        document.getElementById('shopButton').addEventListener('click', function() {
+            window.location.href = "./shop.html";
+        });
+        
+        document.getElementById('restartButton').addEventListener('click', function() {
+            window.location.href = "./solo.html";
+        });
+        
+        document.getElementById('menuButton').addEventListener('click', function() {
+            window.location.href = "./home.html";
+        });
+    </script>
 </body>
 </html>
