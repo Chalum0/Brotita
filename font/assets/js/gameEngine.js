@@ -1,10 +1,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const storedInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const player = new Player();
+const player = new Player(storedInventory);
 const enemies = new EnemyManager();
 const bullets = new BulletManager();
 
