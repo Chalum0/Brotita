@@ -1,6 +1,8 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const storedInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -22,12 +24,16 @@ function updateCoinDisplay() {
     coinDisplay.textContent = `Coins: ${coinManager.getBalance()}`;
   }
 }
+// const player = new Player(storedInventory);
+// const enemies = new EnemyManager();
+// const bullets = new BulletManager();
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function updatePlayer() {
+  // Utiliser la méthode update de la classe Player
   player.update(keys);
 }
 
