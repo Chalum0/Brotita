@@ -6,6 +6,14 @@ class Coin {
     this.radius = 8;
     this.collected = false;
     this.animation = 0; // Pour l'animation flottante
+    
+    // Charger l'image du GIF
+    this.image = new Image();
+    this.image.src = "./assets/img/coin.png"; // Chemin vers le GIF de la pièce
+    
+    // Dimensions de l'affichage
+    this.width = 20;
+    this.height = 20;
   }
 
   draw(ctx) {
@@ -13,16 +21,16 @@ class Coin {
     this.animation += 0.05;
     const floatingOffset = Math.sin(this.animation) * 2;
     
-    // Dessiner la pièce
-    ctx.fillStyle = "#FFD700"; // Couleur dorée
-    ctx.beginPath();
-    ctx.arc(this.x, this.y + floatingOffset, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Contour de la pièce
-    ctx.strokeStyle = "#DAA520"; // Contour doré plus foncé
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // Dessiner le GIF de la pièce
+    if (this.image.complete) {
+      ctx.drawImage(
+        this.image,
+        this.x - this.width / 2,
+        this.y + floatingOffset - this.height / 2,
+        this.width,
+        this.height
+      );
+    }
     
     // Afficher la valeur pour les pièces de valeur supérieure
     if (this.value > 1) {
@@ -30,7 +38,7 @@ class Coin {
       ctx.font = "10px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(this.value, this.x, this.y + floatingOffset);
+      ctx.fillText(this.value, this.x, this.y + floatingOffset + this.height/2);
     }
   }
 
