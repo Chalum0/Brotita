@@ -30,10 +30,12 @@ class BulletManager {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       for (let j = enemies.getEnemies().length - 1; j >= 0; j--) {
         if (distance(this.bullets[i], enemies.getEnemies()[j]) < this.bullets[i].radius + enemies.getEnemies()[j].radius) {
-          enemies.getEnemies()[j].damage(this.bullets[i].strength)
-
+          enemies.getEnemies()[j].damage(this.bullets[i].strength);
+          
           if (enemies.getEnemies()[j].shouldDie()) {
-            enemies.getEnemies().splice(j, 1);
+            // Obtenir la référence à l'ennemi avant de le supprimer
+            const enemy = enemies.getEnemies()[j];
+            enemies.handleEnemyDeath(enemy, j);
           }
           this.bullets.splice(i, 1);
           break;
