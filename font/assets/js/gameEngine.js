@@ -48,11 +48,12 @@ function draw() {
   ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
 
-  player.draw(ctx);
-  enemies.drawEnemies(ctx);
-  bullets.drawBullets(ctx);
-  trees.drawTrees(ctx);
-  coins.drawCoins(ctx);
+  // Modifier l'ordre de rendu pour que les pièces soient en dessous des ennemis
+  trees.drawTrees(ctx);     // Les arbres en arrière-plan
+  coins.drawCoins(ctx);     // Les pièces au-dessus des arbres mais sous les ennemis
+  player.draw(ctx);         // Le joueur au-dessus des pièces
+  enemies.drawEnemies(ctx); // Les ennemis au-dessus des pièces
+  bullets.drawBullets(ctx); // Les balles au premier plan
 
   const healthBarWidth = 200;
   const healthBarHeight = 20;

@@ -12,7 +12,7 @@ class Player {
     this.actual_melee_range = 70 * this.melee_range_value;
     this.actual_distant_range = 200 * this.distant_range_value;
 
-    this.debug = true;
+    this.debug = false;
     this.strength = 2;
     this.invincible = false;
   }
