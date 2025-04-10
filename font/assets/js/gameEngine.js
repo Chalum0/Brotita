@@ -8,7 +8,9 @@ canvas.height = window.innerHeight;
 waveIndex = parseInt(localStorage.getItem('waveIndex') || 0);
 document.querySelector('.i-wave').innerHTML = waveIndex;
 
-const player = new Player();
+const storedInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+
+const player = new Player(storedInventory);
 const enemies = new EnemyManager(waveIndex);
 const bullets = new BulletManager();
 const trees = new TreeManager();

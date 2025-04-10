@@ -1,5 +1,5 @@
 class Player {
-  constructor(x = 0, y = 0) {
+  constructor(i, x = 0, y = 0) {
     this.x = x;
     this.y = y;
     this.radius = 20;
@@ -22,7 +22,12 @@ class Player {
     
     // Dimensions pour l'affichage du sprite
     this.spriteWidth = 60;
-    this.spriteHeight = 60;
+    this.spriteHeight = 60
+
+    this.inventory = new Inventory();
+    i.forEach(item => {
+      this.inventory.addWeapon(new Weapon(...item));
+    })
   }
   
   update(keys) {
