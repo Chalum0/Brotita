@@ -10,12 +10,14 @@ class Enemy {
     }
   
     update(targetX, targetY) {
+      // Déplacement vers le joueur
       const dx = targetX - this.x;
       const dy = targetY - this.y;
       const angle = Math.atan2(dy, dx);
       this.x += Math.cos(angle) * this.speed;
       this.y += Math.sin(angle) * this.speed;
     }
+  
     draw(ctx) {
       ctx.fillStyle = this.color;
       ctx.beginPath();
@@ -24,11 +26,7 @@ class Enemy {
     }
 
     damage(amount) {
-      this.health -= amount;
-    }
-
-    shouldDie() {
-      return this.health <= 0;
+        this.health -= amount;
     }
   
     // Vérifier collision avec une autre entité

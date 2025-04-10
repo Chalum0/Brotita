@@ -7,17 +7,16 @@ class BulletManager {
     if (enemies.length === 0) return;
 
     let closestEnemy = enemies[0];
-    if (!closestEnemy) return;
     let minDist = distance(player, closestEnemy);
-    if (minDist >= player.actual_distant_range) return;
 
     enemies.sort((a, b) => {
       const distA = distance(a, player);
       const distB = distance(b, player);
+      console.log(distA - distB);
       return distA - distB;
     });
 
-    this.bullets.push(new Bullet(player.x, player.y, closestEnemy.x, closestEnemy.y, player.strength));
+    this.bullets.push(new Bullet(player.x, player.y, closestEnemy.x, closestEnemy.y));
   }
 
   updateBullets() {
@@ -38,7 +37,11 @@ class BulletManager {
             enemies.handleEnemyDeath(enemy, j);
           }
           this.bullets.splice(i, 1);
+          enemies.getEnemies().splice(j, 1);
+          // ...and break since that bullet is gone now.
           break;
+        } else if (Math.abs(this.bullets[i])) {
+
         }
       }
     }

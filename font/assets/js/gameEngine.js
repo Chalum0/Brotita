@@ -10,12 +10,26 @@ const player = new Player(storedInventory);
 const enemies = new EnemyManager();
 const bullets = new BulletManager();
 const trees = new TreeManager();
+const coins = new CoinManager();
+
+enemies.setCoinManager(coins);
+
+function updateCoinDisplay() {
+  const coinDisplay = document.getElementById('coin-display');
+  if (coinDisplay) {
+    coinDisplay.textContent = `Coins: ${coinManager.getBalance()}`;
+  }
+}
+// const player = new Player(storedInventory);
+// const enemies = new EnemyManager();
+// const bullets = new BulletManager();
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function updatePlayer() {
+  // Utiliser la méthode update de la classe Player
   player.update(keys);
 }
 
