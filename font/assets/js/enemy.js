@@ -28,10 +28,14 @@ class Enemy {
     damage(amount) {
         this.health -= amount;
     }
-  
-    // Vérifier collision avec une autre entité
-    collidesWith(other) {
-      const distance = Math.hypot(this.x - other.x, this.y - other.y);
-      return distance < this.radius + other.radius;
-    }
+
+  shouldDie() {
+    return this.health <= 0;
+  }
+
+  // Vérifier collision avec une autre entité
+  collidesWith(other) {
+    const distance = Math.hypot(this.x - other.x, this.y - other.y);
+    return distance < this.radius + other.radius;
+  }
   }

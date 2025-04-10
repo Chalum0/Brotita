@@ -22,7 +22,6 @@ class Bullet {
   }
 
   update(){
-    console.log(this.dx, this.dy);
     this.x += this.dx;
     this.y += this.dy;
   }

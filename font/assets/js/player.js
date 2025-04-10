@@ -1,5 +1,5 @@
 class Player {
-  constructor(x = 0, y = 0) {
+  constructor(i, x = 0, y = 0) {
     this.x = x;
     this.y = y;
     this.radius = 20;
@@ -23,29 +23,67 @@ class Player {
 
       this.inventory.addWeapon(weapon1)
     })
-    console.log(this.inventory.weapons);
+
+    // Charger le sprite du personnage
+    this.sprite = new Image();
+    this.sprite.src = localStorage.getItem('playerSprite') || './assets/img/bro/orgine.png';
+
+    // Dimensions pour l'affichage du sprite
+    this.spriteWidth = 60;
+    this.spriteHeight = 60;
   }
-  
+
   update(keys) {
     if (keys.ArrowUp) this.y -= this.speed;
     if (keys.ArrowDown) this.y += this.speed;
     if (keys.ArrowLeft) this.x -= this.speed;
     if (keys.ArrowRight) this.x += this.speed;
+  }
 
-    if (this.x > window.innerWidth/2) {
-      this.x = window.innerWidth/2;
-    }
-    if (this.x < -window.innerWidth/2) {
-      this.x = -window.innerWidth/2;
+  draw(ctx) {
+    if (this.debug) {
+      ctx.fillStyle = "pink";
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.actual_distant_range - 30, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    if (this.y > window.innerHeight/2) {
-      this.y = window.innerHeight/2;
-    }
-    if (this.y < -window.innerHeight/2) {
-      this.y = -window.innerHeight/2;
+    // Dessiner le sprite si l'image est chargée
+    if (this.sprite.complete) {
+      ctx.drawImage(
+        this.sprite,
+        this.x - this.spriteWidth / 2,
+        this.y - this.spriteHeight / 2,
+        this.spriteWidth,
+        this.spriteHeight
+      );
+    } else {
+      // Afficher un cercle en attendant que l'image se charge
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
+
+  damage(amount) {
+    if (!this.invincible) {
+      this.health -= amount;
+      this.invincible = true;
+      setTimeout(() => {
+        this.invincible = false;
+      }, 250)
+    }
+  }
+
+  isAlive() {
+    return this.health > 0;
+  }
+
+  heal(amount) {
+    this.health = Math.min(this.health + amount, this.max_health)
+  }
+
 
   addWeapon(weapon){
     const max_weapons = 6;
@@ -64,6 +102,5 @@ class Player {
   removeItem(item) {
     this.items.splice(this.items.indexOf(item), 1);
   }
-
 
 }

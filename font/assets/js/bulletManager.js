@@ -12,7 +12,6 @@ class BulletManager {
     enemies.sort((a, b) => {
       const distA = distance(a, player);
       const distB = distance(b, player);
-      console.log(distA - distB);
       return distA - distB;
     });
 
