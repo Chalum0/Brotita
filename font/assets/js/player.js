@@ -15,6 +15,14 @@ class Player {
     this.debug = false;
     this.strength = 2;
     this.invincible = false;
+    
+    // Charger le sprite du personnage
+    this.sprite = new Image();
+    this.sprite.src = localStorage.getItem('playerSprite') || './assets/img/bro/orgine.png';
+    
+    // Dimensions pour l'affichage du sprite
+    this.spriteWidth = 60;
+    this.spriteHeight = 60;
   }
   
   update(keys) {
@@ -32,10 +40,22 @@ class Player {
       ctx.fill();
     }
 
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
+    // Dessiner le sprite si l'image est chargée
+    if (this.sprite.complete) {
+      ctx.drawImage(
+        this.sprite,
+        this.x - this.spriteWidth / 2,
+        this.y - this.spriteHeight / 2,
+        this.spriteWidth,
+        this.spriteHeight
+      );
+    } else {
+      // Afficher un cercle en attendant que l'image se charge
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   
   damage(amount) {
@@ -55,5 +75,4 @@ class Player {
   heal(amount) {
     this.health = Math.min(this.health + amount, this.max_health)
   }
-
 }

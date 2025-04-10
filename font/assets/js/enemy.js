@@ -1,12 +1,12 @@
 class Enemy {
-    constructor(x, y) {
+    constructor(x, y, wave) {
       this.x = x;
       this.y = y;
       this.radius = 15;
       this.speed = 1.5;
       this.color = "red";
-      this.health = 3;
-      this.strength = 20;
+      this.health = 3 + Math.floor(wave * 0.5);
+      this.strength = 20 + Math.floor(wave * 2);
     }
   
     update(targetX, targetY) {

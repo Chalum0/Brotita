@@ -27,8 +27,9 @@ class EnemyManager {
     const x = canvas.width/2 + Math.cos(angle) * distance;
     const y = canvas.height/2 + Math.sin(angle) * distance;
     
-    this.addEnemy(new Enemy(x, y))
-  }
+    // Passage de la vague actuelle
+    this.addEnemy(new Enemy(x, y, this.wave));
+}
 
   updateEnemies(player) {
     this.enemies.sort((a, b) => {
