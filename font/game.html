@@ -33,8 +33,11 @@
     </div>
 
     <script>
-        let timer = 30;
-        let waveIndex = 0;
+        let waveIndex = parseInt(localStorage.getItem('waveIndex') || 0);
+        let baseWaveTime = 30; // Temps de base pour la première vague
+        let additionalTimePerWave = 10; // Secondes supplémentaires par vague
+        let timer = baseWaveTime + (waveIndex * additionalTimePerWave);
+
         let totalCoins = 0;
         let waveCompleted = false;
 
@@ -109,6 +112,7 @@
         });
         
         document.getElementById('restartButton').addEventListener('click', function() {
+            localStorage.clear();
             window.location.href = "./solo.html";
         });
         

@@ -277,6 +277,7 @@
     document.getElementById('playButton').addEventListener('click', function() {
         // Vérifier que les sélections sont faites
         if (selectedWeapon && selectedCharacter) {
+            localStorage.clear();
             // Stocker les données du personnage
             localStorage.setItem('selectedCharacter', selectedCharacter.getAttribute('data-char'));
             

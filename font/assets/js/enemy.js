@@ -5,7 +5,7 @@ class Enemy {
       this.radius = 15;
       this.speed = 1.5;
       this.color = "red";
-      this.health = 3 + Math.floor(wave * 0.5);
+      this.health = 3 + Math.floor(wave * 1.5);
       this.strength = 20 + Math.floor(wave * 2);
     }
   
