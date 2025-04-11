@@ -3,7 +3,7 @@ class Bullet {
     this.x = x;
     this.y = y;
     this.radius = 5;
-    this.speed = 5;
+    this.speed = 10;
     const dx = tx - this.x;
     const dy = ty - this.y;
     const angle = Math.atan2(dy, dx);

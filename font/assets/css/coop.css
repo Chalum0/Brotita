@@ -1,0 +1,361 @@
+/* Styles spécifiques pour le mode coop */
+.coop-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+/* Nouvelle disposition en colonnes */
+.coop-layout {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.selection-area {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.team-area {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.room-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.create-room, .join-room {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.room-btn {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--title-font);
+    margin: 10px 0;
+    transition: all 0.2s ease;
+}
+
+.room-btn:hover {
+    transform: scale(1.05);
+    background-color: var(--primary);
+    color: var(--secondary);
+}
+
+.room-code {
+    display: none;
+    margin-top: 15px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.join-form {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.join-form input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--primary);
+}
+
+.join-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#joinStatus {
+    height: 20px;
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.header h4 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.2rem;
+    font-family: var(--title-font);
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
+/* Action buttons styles */
+.action-buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#playButton {
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-family: var(--title-font);
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+#playButton:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--secondary);
+}
+
+#playButton:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Team display styles */
+.team-display {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.team-display h3 {
+    text-align: center;
+    font-family: var(--title-font);
+    color: var(--primary);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.team-members {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.team-member.current-player {
+    border: 2px solid var(--secondary);
+    box-shadow: 0 0 10px rgba(213, 46, 49, 0.5);
+}
+
+.member-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.member-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-selection {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.member-status {
+    font-size: 0.9rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.member-status.host {
+    background-color: #ff9800;
+    color: white;
+}
+
+.member-status.ready {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .coop-layout {
+        flex-direction: column;
+    }
+    
+    .team-area {
+        order: -1; /* Place team area above selection area on smaller screens */
+    }
+    
+    .team-members {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .team-member {
+        width: calc(50% - 15px);
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .room-controls {
+        flex-direction: column;
+    }
+    
+    .weapons .grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .characters .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .team-member {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .weapons .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .characters .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+#playButton {
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-family: var(--title-font);
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin: 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#playButton:not(:disabled):hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--secondary);
+}
+
+#playButton:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Animation de pulsation pour attirer l'attention */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#playButton:not(:disabled) {
+    animation: pulse 2s infinite;
+}
+
+.team-display {
+    position: relative;
+    padding-bottom: 80px; /* Espace pour le bouton */
+}
+
+.action-buttons {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    padding: 0 15px;
+}
+
+#playButton {
+    display: block !important;
+    width: 100% !important;
+    background-color: var(--secondary) !important;
+    color: var(--primary) !important;
+    font-family: var(--title-font) !important;
+    padding: 15px !important;
+    font-size: 1.2rem !important;
+    border: none !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+    z-index: 10 !important;
+}
+
+#playButton:not(:disabled) {
+    animation: pulse 2s infinite !important;
+}
+
+#playButton:disabled {
+    background-color: #888 !important;
+    opacity: 0.7 !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

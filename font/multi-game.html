@@ -1,0 +1,796 @@
+Brotita\font\multi-game.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brotita - Jeu Multijoueur</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Arial', sans-serif;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #roomInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+        }
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            font-size: 24px;
+        }
+        #players {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+        }
+        #coins {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: gold;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            font-size: 20px;
+        }
+        #connectionStatus {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="roomInfo">Salle: <span id="roomId"></span></div>
+        <div id="timer">Temps: <span id="timeLeft">30</span></div>
+        <div id="players">Joueurs: <span id="playerCount">1</span></div>
+        <div id="coins">Pièces: <span id="coinCount">0</span></div>
+        <div id="connectionStatus">Status: <span id="status">Connexion...</span></div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        // Classe pour gérer les sprites des joueurs
+        class SpriteManager {
+            constructor() {
+                this.sprites = {};
+                this.loadedImages = {};
+                
+                // Palette de couleurs distinctes pour les joueurs
+                this.playerColors = [
+                    "#3498db", // bleu
+                    "#e74c3c", // rouge
+                    "#2ecc71", // vert
+                    "#f1c40f", // jaune
+                    "#9b59b6", // violet
+                    "#1abc9c", // turquoise
+                    "#d35400", // orange
+                    "#34495e", // bleu foncé
+                    "#7f8c8d", // gris
+                    "#27ae60"  // vert foncé
+                ];
+                
+                // Créer des couleurs par défaut pour chaque type de sprite
+                this.defaultColors = {
+                    player: "#3498db",
+                    enemy: "#e74c3c",
+                    coin: "#f1c40f",
+                    bullet: "#ecf0f1",
+                    tree: "#27ae60"
+                };
+                
+                // Définir les sprites des joueurs (10 types numérotés de 0 à 9)
+                for (let i = 0; i <= 9; i++) {
+                    this.sprites[i] = this.playerColors[i] || `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+                }
+            }
+            
+            // Créer une image par défaut avec une couleur
+            createDefaultImage(type, size = 50, spriteId = 0) {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // Déterminer la couleur en fonction du type
+                let color;
+                if (type === 'player') {
+                    // Utiliser la couleur du joueur basée sur son spriteId
+                    color = this.playerColors[spriteId] || this.defaultColors[type];
+                } else {
+                    color = this.defaultColors[type] || "#7f8c8d";
+                }
+                
+                ctx.fillStyle = color;
+                
+                // Dessiner une forme différente selon le type
+                switch(type) {
+                    case 'player':
+                        ctx.beginPath();
+                        ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'enemy':
+                        ctx.fillRect(0, 0, size, size);
+                        break;
+                    case 'coin':
+                        ctx.beginPath();
+                        ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = "#ffffff";
+                        ctx.beginPath();
+                        ctx.arc(size/2, size/2, size/4, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'bullet':
+                        ctx.beginPath();
+                        ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'tree':
+                        ctx.fillRect(size/4, size/2, size/2, size/2); // tronc
+                        ctx.fillStyle = "#2ecc71";
+                        ctx.beginPath();
+                        ctx.arc(size/2, size/3, size/3, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    default:
+                        ctx.fillRect(0, 0, size, size);
+                }
+                
+                // Créer une image à partir du canvas
+                const img = new Image();
+                img.src = canvas.toDataURL();
+                return img;
+            }
+            
+            // Obtenir un sprite pour un joueur
+            getPlayerSprite(playerId) {
+                const cacheKey = `player-${playerId}`;
+                if (!this.loadedImages[cacheKey]) {
+                    this.loadedImages[cacheKey] = this.createDefaultImage('player', 50, playerId);
+                }
+                return this.loadedImages[cacheKey];
+            }
+            
+            // Obtenir un sprite pour un type d'élément
+            getSprite(type) {
+                if (!this.loadedImages[type]) {
+                    const size = type === 'bullet' ? 10 : (type === 'coin' ? 30 : 50);
+                    this.loadedImages[type] = this.createDefaultImage(type, size);
+                }
+                return this.loadedImages[type];
+            }
+        }
+        
+        // Connexion au serveur socket.io
+        const socket = io('http://localhost:3000', {
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
+        });
+        
+        // Récupérer les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomId');
+        const playerId = urlParams.get('playerId');
+        const spriteId = parseInt(urlParams.get('spriteId') || 0); // ID du sprite du joueur, 0 par défaut
+        
+        // Afficher l'ID de la salle
+        document.getElementById('roomId').textContent = roomId || 'Non spécifiée';
+        
+        // Référence au canvas et contexte
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Redimensionner le canvas à la taille de la fenêtre
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Initialiser le gestionnaire de sprites
+        const spriteManager = new SpriteManager();
+        
+        // État du jeu local
+        const gameState = {
+            players: {},
+            enemies: [],
+            coins: [],
+            bullets: [],
+            trees: [], // Ajouté pour les arbres
+            playerInput: {
+                up: false,
+                down: false,
+                left: false,
+                right: false,
+                shoot: false
+            },
+            playerPosition: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                health: 100,
+                spriteId: spriteId,
+                weapons: []
+            },
+            wave: 0,
+            timer: 30,
+            connected: false
+        };
+        
+        // Gestionnaire d'événements de connexion Socket.io
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+            document.getElementById('status').textContent = 'Connecté';
+            document.getElementById('status').style.color = '#2ecc71';
+            gameState.connected = true;
+            
+            // Rejoindre/créer la salle si on a un roomId
+            if (roomId) {
+                joinRoom();
+            }
+            
+            // Demander l'état du jeu après connexion
+            requestGameState();
+        });
+        
+        socket.on('connect_error', (error) => {
+            console.error('Erreur de connexion:', error);
+            document.getElementById('status').textContent = 'Erreur de connexion';
+            document.getElementById('status').style.color = '#e74c3c';
+            gameState.connected = false;
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Déconnecté du serveur');
+            document.getElementById('status').textContent = 'Déconnecté';
+            document.getElementById('status').style.color = '#e74c3c';
+            gameState.connected = false;
+        });
+        
+        socket.on('reconnect', (attemptNumber) => {
+            console.log(`Reconnecté au serveur (tentative ${attemptNumber})`);
+            document.getElementById('status').textContent = 'Reconnecté';
+            document.getElementById('status').style.color = '#2ecc71';
+            gameState.connected = true;
+            
+            // Rejoindre à nouveau la salle après reconnexion
+            if (roomId) {
+                joinRoom();
+            }
+            
+            // Demander l'état du jeu après reconnexion
+            requestGameState();
+        });
+        
+        // Fonction pour rejoindre une salle
+        function joinRoom() {
+            socket.emit('join-room', {
+                roomId,
+                spriteId: gameState.playerPosition.spriteId
+            });
+            console.log(`Tentative de rejoindre la salle ${roomId} avec le sprite ${gameState.playerPosition.spriteId}`);
+        }
+        
+        // Fonction pour demander l'état complet du jeu
+        function requestGameState() {
+            if (roomId && gameState.connected) {
+                socket.emit('request-game-state', { roomId });
+                console.log('Demande de l\'état du jeu envoyée');
+            }
+        }
+        
+        // Écouter les événements du clavier
+        window.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'z':
+                case 'arrowup':
+                    gameState.playerInput.up = true;
+                    break;
+                case 's':
+                case 'arrowdown':
+                    gameState.playerInput.down = true;
+                    break;
+                case 'q':
+                case 'arrowleft':
+                    gameState.playerInput.left = true;
+                    break;
+                case 'd':
+                case 'arrowright':
+                    gameState.playerInput.right = true;
+                    break;
+                case ' ':
+                    gameState.playerInput.shoot = true;
+                    break;
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'z':
+                case 'arrowup':
+                    gameState.playerInput.up = false;
+                    break;
+                case 's':
+                case 'arrowdown':
+                    gameState.playerInput.down = false;
+                    break;
+                case 'q':
+                case 'arrowleft':
+                    gameState.playerInput.left = false;
+                    break;
+                case 'd':
+                case 'arrowright':
+                    gameState.playerInput.right = false;
+                    break;
+                case ' ':
+                    gameState.playerInput.shoot = false;
+                    break;
+            }
+        });
+        
+        // ÉCOUTEURS D'ÉVÉNEMENTS DU SERVEUR
+        
+        // Réception de l'état du jeu complet
+        socket.on('game-state', (state) => {
+            console.log('État du jeu reçu:', state);
+            
+            // Mettre à jour les données du jeu
+            if (state.players) gameState.players = state.players;
+            if (state.enemies) gameState.enemies = state.enemies;
+            if (state.coins) gameState.coins = state.coins;
+            if (state.trees) gameState.trees = state.trees;
+            if (state.wave) gameState.wave = state.wave;
+            if (state.timer) gameState.timer = state.timer;
+            
+            // Mettre à jour l'interface
+            document.getElementById('playerCount').textContent = Object.keys(gameState.players).length;
+            document.getElementById('timeLeft').textContent = gameState.timer;
+        });
+        
+        // Confirmation d'avoir rejoint une salle
+        socket.on('room-joined', (data) => {
+            console.log('Salle rejointe:', data);
+            
+            // Mettre à jour notre propre ID et les infos de la salle
+            playerId = data.playerId;
+            
+            // Mettre à jour les joueurs
+            gameState.players = data.players;
+            document.getElementById('playerCount').textContent = Object.keys(gameState.players).length;
+            
+            // Demander l'état complet du jeu
+            requestGameState();
+        });
+        
+        // Erreur lors de la tentative de rejoindre une salle
+        socket.on('room-join-error', (data) => {
+            console.error('Erreur pour rejoindre la salle:', data.message);
+            alert(`Erreur: ${data.message}`);
+        });
+        
+        // Mise à jour du timer
+        socket.on('timer-update', (data) => {
+            gameState.timer = data.timer;
+            document.getElementById('timeLeft').textContent = gameState.timer;
+        });
+        
+        // Démarrage d'une nouvelle vague
+        socket.on('wave-started', (data) => {
+            gameState.wave = data.wave;
+            gameState.timer = data.timer;
+            document.getElementById('timeLeft').textContent = gameState.timer;
+            console.log(`Vague ${data.wave} démarrée`);
+        });
+        
+        // Vague terminée
+        socket.on('wave-completed', (data) => {
+            // Afficher un message de fin de vague
+            alert(`Vague ${data.wave} terminée ! Place au magasin.`);
+            
+            // Rediriger vers le magasin
+            if (data.nextAction === 'shop') {
+                // Option: rediriger vers shop.html
+                // window.location.href = `shop.html?roomId=${roomId}&playerId=${playerId}&spriteId=${gameState.playerPosition.spriteId}`;
+            }
+        });
+        
+        // Un nouveau joueur rejoint
+        socket.on('player-joined', (data) => {
+            console.log('Nouveau joueur:', data.player);
+            gameState.players[data.player.id] = data.player;
+            document.getElementById('playerCount').textContent = Object.keys(gameState.players).length;
+        });
+        
+        // Un joueur quitte
+        socket.on('player-left', (data) => {
+            console.log('Joueur parti:', data.playerId);
+            delete gameState.players[data.playerId];
+            document.getElementById('playerCount').textContent = Object.keys(gameState.players).length;
+        });
+        
+        // Mise à jour de la position d'un joueur
+        socket.on('player-position', (data) => {
+            // S'assurer que le joueur existe dans notre état
+            if (!gameState.players[data.id]) {
+                gameState.players[data.id] = {
+                    id: data.id,
+                    x: data.x,
+                    y: data.y,
+                    health: data.health,
+                    weapons: data.weapons || [],
+                    spriteId: data.spriteId || 0
+                };
+            } else {
+                // Mettre à jour les données existantes
+                gameState.players[data.id].x = data.x;
+                gameState.players[data.id].y = data.y;
+                gameState.players[data.id].health = data.health;
+                
+                // Mettre à jour les armes seulement si elles sont fournies
+                if (data.weapons) {
+                    gameState.players[data.id].weapons = data.weapons;
+                }
+                
+                // Mettre à jour l'ID du sprite seulement s'il est fourni
+                if (data.spriteId !== undefined) {
+                    gameState.players[data.id].spriteId = data.spriteId;
+                }
+            }
+        });
+        
+        // Apparition d'un ennemi
+        socket.on('enemy-spawned', (data) => {
+            console.log('Nouvel ennemi:', data.enemy);
+            gameState.enemies.push(data.enemy);
+        });
+        
+        // Mise à jour d'un ennemi
+        socket.on('enemy-updated', (data) => {
+            const enemy = gameState.enemies.find(e => e.id === data.enemyId);
+            if (enemy) {
+                enemy.x = data.x;
+                enemy.y = data.y;
+                enemy.health = data.health;
+            } else {
+                // L'ennemi n'existe pas, l'ajouter
+                gameState.enemies.push({
+                    id: data.enemyId,
+                    x: data.x,
+                    y: data.y,
+                    health: data.health,
+                    maxHealth: data.health
+                });
+            }
+        });
+        
+        // Mort d'un ennemi
+        socket.on('enemy-died', (data) => {
+            console.log('Ennemi tué:', data.enemyId);
+            gameState.enemies = gameState.enemies.filter(e => e.id !== data.enemyId);
+        });
+        
+        // Apparition d'une pièce
+        socket.on('coin-spawned', (data) => {
+            console.log('Nouvelle pièce:', data);
+            gameState.coins.push(data);
+        });
+        
+        // Collecte d'une pièce
+        socket.on('coin-collected', (data) => {
+            console.log('Pièce collectée:', data);
+            gameState.coins = gameState.coins.filter(c => c.id !== data.coinId);
+            
+            if (data.playerId === playerId) {
+                document.getElementById('coinCount').textContent = data.totalCoins;
+            }
+        });
+        
+        // Tir d'une balle
+        socket.on('bullet-fired', (data) => {
+            console.log('Nouvelle balle:', data.bullet);
+            gameState.bullets.push(data.bullet);
+        });
+        
+        // Impact d'une balle
+        socket.on('bullet-hit', (data) => {
+            console.log('Impact de balle:', data);
+            gameState.bullets = gameState.bullets.filter(b => b.id !== data.bulletId);
+        });
+        
+        // Fermeture de la salle (si l'hôte quitte)
+        socket.on('room-closed', (data) => {
+            console.log('Salle fermée:', data.message);
+            alert(`La salle a été fermée: ${data.message}`);
+            // Rediriger vers la page d'accueil
+            window.location.href = 'index.html';
+        });
+        
+        // MISE À JOUR ET RENDU DU JEU
+        
+        // Mise à jour du jeu
+        function updateGame() {
+            if (!gameState.connected) return;
+            
+            // Vitesse de déplacement du joueur
+            const playerSpeed = 6;
+            
+            // Mise à jour de la position du joueur en fonction des inputs
+            if (gameState.playerInput.up) {
+                gameState.playerPosition.y -= playerSpeed;
+            }
+            if (gameState.playerInput.down) {
+                gameState.playerPosition.y += playerSpeed;
+            }
+            if (gameState.playerInput.left) {
+                gameState.playerPosition.x -= playerSpeed;
+            }
+            if (gameState.playerInput.right) {
+                gameState.playerPosition.x += playerSpeed;
+            }
+            
+            // Limiter le joueur aux bordures du canvas
+            gameState.playerPosition.x = Math.max(0, Math.min(canvas.width, gameState.playerPosition.x));
+            gameState.playerPosition.y = Math.max(0, Math.min(canvas.height, gameState.playerPosition.y));
+            
+            // Tirer si l'input de tir est activé
+            if (gameState.playerInput.shoot) {
+                const bullet = {
+                    x: gameState.playerPosition.x,
+                    y: gameState.playerPosition.y,
+                    speed: 10,
+                    angle: Math.random() * Math.PI * 2,
+                    damage: 10
+                };
+                
+                socket.emit('bullet-fired', {
+                    roomId,
+                    bullet
+                });
+                
+                gameState.playerInput.shoot = false;
+            }
+            
+            // Envoyer la position du joueur au serveur (seulement si connecté)
+            socket.emit('player-update', {
+                roomId,
+                x: gameState.playerPosition.x,
+                y: gameState.playerPosition.y,
+                health: gameState.playerPosition.health,
+                weapons: gameState.playerPosition.weapons,
+                spriteId: gameState.playerPosition.spriteId
+            });
+            
+            // Mise à jour des balles
+            gameState.bullets.forEach(bullet => {
+                if (!bullet.x || !bullet.y || !bullet.angle || !bullet.speed) return;
+                
+                bullet.x += Math.cos(bullet.angle) * bullet.speed;
+                bullet.y += Math.sin(bullet.angle) * bullet.speed;
+                
+                // Vérifier collision avec les ennemis
+                gameState.enemies.forEach(enemy => {
+                    if (!enemy || !enemy.x || !enemy.y) return;
+                    
+                    const dx = bullet.x - enemy.x;
+                    const dy = bullet.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 30) { // 30 est le rayon de détection
+                        socket.emit('bullet-hit', {
+                            roomId,
+                            bulletId: bullet.id,
+                            enemyId: enemy.id,
+                            damage: bullet.damage
+                        });
+                    }
+                });
+            });
+            
+            // Supprimer les balles qui sont hors de l'écran
+            gameState.bullets = gameState.bullets.filter(bullet => {
+                if (!bullet || !bullet.x || !bullet.y) return false;
+                return bullet.x > 0 && bullet.x < canvas.width && bullet.y > 0 && bullet.y < canvas.height;
+            });
+            
+            // Vérifier si le joueur collecte des pièces
+            gameState.coins.forEach(coin => {
+                if (!coin || !coin.x || !coin.y) return;
+                
+                const dx = gameState.playerPosition.x - coin.x;
+                const dy = gameState.playerPosition.y - coin.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 30) { // 30 est le rayon de collecte
+                    socket.emit('coin-collected', {
+                        roomId,
+                        coinId: coin.id
+                    });
+                }
+            });
+        }
+        
+        // Dessiner le jeu
+        function drawGame() {
+            // Effacer le canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Si déconnecté, afficher un message
+            if (!gameState.connected) {
+                ctx.fillStyle = 'white';
+                ctx.font = '32px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Déconnecté du serveur...', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // Dessiner les arbres (en arrière-plan)
+            gameState.trees.forEach(tree => {
+                const treeSprite = spriteManager.getSprite('tree');
+                ctx.drawImage(treeSprite, tree.x - 25, tree.y - 25, 50, 50);
+            });
+            
+            // Dessiner les pièces
+            gameState.coins.forEach(coin => {
+                if (!coin || !coin.x || !coin.y) return;
+                
+                const coinSprite = spriteManager.getSprite('coin');
+                ctx.drawImage(coinSprite, coin.x - 15, coin.y - 15, 30, 30);
+            });
+            
+            // Dessiner les autres joueurs
+            Object.values(gameState.players).forEach(player => {
+                if (!player || !player.x || !player.y || player.id === playerId) return;
+                
+                // Utiliser le sprite du joueur en fonction de son ID de sprite
+                const playerSprite = spriteManager.getPlayerSprite(player.spriteId || 0);
+                ctx.drawImage(playerSprite, player.x - 25, player.y - 25, 50, 50);
+                
+                // Dessiner le nom/ID du joueur
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(player.id.substring(0, 5), player.x, player.y - 45);
+                
+                // Dessiner la barre de vie
+                ctx.fillStyle = 'red';
+                ctx.fillRect(player.x - 25, player.y - 40, 50, 5);
+                ctx.fillStyle = 'green';
+                ctx.fillRect(player.x - 25, player.y - 40, 50 * (player.health / 100), 5);
+                
+                // Dessiner les armes du joueur s'il en a
+                if (player.weapons && player.weapons.length > 0) {
+                    player.weapons.forEach((weapon, index) => {
+                        // Ici vous pourriez dessiner les armes orbitant autour du joueur
+                        // Exemple simplifié:
+                        const angle = index * (Math.PI * 2 / player.weapons.length);
+                        const distance = 40; // distance de l'arme au joueur
+                        const weaponX = player.x + Math.cos(angle) * distance;
+                        const weaponY = player.y + Math.sin(angle) * distance;
+                        
+                        ctx.fillStyle = 'yellow';
+                        ctx.beginPath();
+                        ctx.arc(weaponX, weaponY, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                }
+            });
+            
+            // Dessiner le joueur local
+            const localPlayerSprite = spriteManager.getPlayerSprite(gameState.playerPosition.spriteId);
+            ctx.drawImage(localPlayerSprite, gameState.playerPosition.x - 25, gameState.playerPosition.y - 25, 50, 50);
+            
+            // Dessiner le nom/ID du joueur local
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText("YOU", gameState.playerPosition.x, gameState.playerPosition.y - 45);
+            
+            // Dessiner la barre de vie du joueur local
+            ctx.fillStyle = 'red';
+            ctx.fillRect(gameState.playerPosition.x - 25, gameState.playerPosition.y - 40, 50, 5);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(gameState.playerPosition.x - 25, gameState.playerPosition.y - 40, 50 * (gameState.playerPosition.health / 100), 5);
+            
+            // Dessiner les armes du joueur local s'il en a
+            if (gameState.playerPosition.weapons && gameState.playerPosition.weapons.length > 0) {
+                gameState.playerPosition.weapons.forEach((weapon, index) => {
+                    // Dessiner les armes orbitant autour du joueur
+                    const angle = index * (Math.PI * 2 / gameState.playerPosition.weapons.length);
+                    const distance = 40; // distance de l'arme au joueur
+                    const weaponX = gameState.playerPosition.x + Math.cos(angle) * distance;
+                    const weaponY = gameState.playerPosition.y + Math.sin(angle) * distance;
+                    
+                    ctx.fillStyle = 'yellow';
+                    ctx.beginPath();
+                    ctx.arc(weaponX, weaponY, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+            
+            // Dessiner les ennemis
+            gameState.enemies.forEach(enemy => {
+                if (!enemy || !enemy.x || !enemy.y) return;
+                
+                const enemySprite = spriteManager.getSprite('enemy');
+                ctx.drawImage(enemySprite, enemy.x - 25, enemy.y - 25, 50, 50);
+                
+                // Dessiner la barre de vie
+                ctx.fillStyle = 'red';
+                ctx.fillRect(enemy.x - 25, enemy.y - 40, 50, 5);
+                
+                // Si maxHealth n'est pas défini, utiliser health comme maxHealth
+                const maxHealth = enemy.maxHealth || enemy.health;
+                ctx.fillStyle = 'green';
+                ctx.fillRect(enemy.x - 25, enemy.y - 40, 50 * (enemy.health / maxHealth), 5);
+            });
+            
+            // Dessiner les balles
+            gameState.bullets.forEach(bullet => {
+                if (!bullet || !bullet.x || !bullet.y) return;
+                
+                const bulletSprite = spriteManager.getSprite('bullet');
+                ctx.drawImage(bulletSprite, bullet.x - 5, bullet.y - 5, 10, 10);
+            });
+            
+            // Dessiner les informations de vague
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Vague: ${gameState.wave}`, canvas.width / 2, 30);
+            
+            // Réinitialiser l'alignement du texte
+            ctx.textAlign = 'left';
+        }
+        
+        // Demander l'état complet du jeu périodiquement
+        setInterval(requestGameState, 5000);
+        
+        // Boucle principale du jeu
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Démarrer le jeu
+        gameLoop();
+    </script>
+</body>
+</html>

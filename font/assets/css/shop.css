@@ -206,3 +206,39 @@ header h1 {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 }
+
+.stats-preview {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+}
+
+.stats-preview .positive {
+    color: #4CAF50;
+}
+
+.stats-preview .negative {
+    color: #F44336;
+}
+
+.purchased {
+    opacity: 0.5;
+    cursor: default;
+    position: relative;
+}
+
+.purchased::after {
+    content: "PURCHASED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    background-color: var(--secondary);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}

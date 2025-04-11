@@ -22,12 +22,12 @@
         <div class="shop-items">
             <h2>WEAPONS</h2>
             <div class="items-grid" id="weaponsGrid">
-                <!-- Armes générées dynamiquement -->
+                <!-- Weapons generated dynamically -->
             </div>
             
             <h2>ITEMS</h2>
             <div class="items-grid" id="itemsGrid">
-                <!-- Items générés dynamiquement -->
+                <!-- Items generated dynamically -->
             </div>
         </div>
         
@@ -48,143 +48,49 @@
                     <p id="stat-regen">5</p>
                     <label>Régénération PV</label>
                 </div>
-                <!-- Autres stats -->
+                <div class="stat">
+                    <div class="ico">
+                        <img src="./assets/img/icons/3.svg">
+                    </div>
+                    <p id="stat-attack">1</p>
+                    <label>Attack</label>
+                </div>
+                <div class="stat">
+                    <div class="ico">
+                        <img src="./assets/img/icons/4.svg">
+                    </div>
+                    <p id="stat-speed">1</p>
+                    <label>Vitesse Attack</label>
+                </div>
+                <div class="stat">
+                    <div class="ico">
+                        <img src="./assets/img/icons/5.svg">
+                    </div>
+                    <p id="stat-range">1</p>
+                    <label>Distance</label>
+                </div>
+                <div class="stat">
+                    <div class="ico">
+                        <img src="./assets/img/icons/6.svg">
+                    </div>
+                    <p id="stat-move">1</p>
+                    <label>Vitesse</label>
+                </div>
+                <div class="stat">
+                    <div class="ico">
+                        <img src="./assets/img/icons/7.svg">
+                    </div>
+                    <p id="stat-luck">1</p>
+                    <label>Chance</label>
+                </div>
             </div>
         </div>
         
         <button id="continueButton">NEXT WAVE</button>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Récupérer les informations du joueur
-            const playerCoins = parseInt(localStorage.getItem('playerCoins') || 0);
-            const waveNumber = parseInt(localStorage.getItem('waveIndex') || 0) + 1;
-            const playerStats = JSON.parse(localStorage.getItem('playerStats') || '[100,5,1,1,1,1,1]');
-            const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
-            
-            // Afficher les informations
-            document.getElementById('playerCoins').textContent = playerCoins;
-            document.getElementById('waveNumber').textContent = waveNumber;
-            
-            // Afficher les statistiques du joueur
-            document.getElementById('stat-health').textContent = playerStats[0];
-            document.getElementById('stat-regen').textContent = playerStats[1];
-            // Continuer avec les autres stats...
-            
-            // Générer les items du magasin
-            generateShopItems(waveNumber, playerCoins);
-            
-            // Bouton pour continuer vers la prochaine vague
-            document.getElementById('continueButton').addEventListener('click', function() {
-                // Sauvegarder l'index de vague mis à jour
-                localStorage.setItem('waveIndex', waveNumber);
-                // Rediriger vers le jeu
-                window.location.href = 'game.html';
-            });
-        });
-        
-        function generateShopItems(wave, playerCoins) {
-            const weaponsGrid = document.getElementById('weaponsGrid');
-            const itemsGrid = document.getElementById('itemsGrid');
-            
-            // Définir des armes et items disponibles
-            const weapons = [
-                { id: 1, name: "Sword", price: 10, stats: [0, 0, 2, 2, 1.3, 1, 10], img: "./assets/img/weapons/1.png" },
-                { id: 2, name: "Bow", price: 15, stats: [1, 0, 1, 3, 1.01, 1.2, 5], img: "./assets/img/weapons/2.png" },
-                // Ajouter d'autres armes
-            ];
-            
-            const items = [
-                { id: 101, name: "Health Potion", price: 5, stats: [20, 0, 0, 0, 0, 0, 0], img: "./assets/img/items/potion.png" },
-                { id: 102, name: "Speed Boost", price: 8, stats: [0, 0, 0, 0, 0, 2, 0], img: "./assets/img/items/boots.png" },
-                // Ajouter d'autres items
-            ];
-            
-            // Générer aléatoirement les items disponibles dans le magasin
-            const availableWeapons = shuffleArray(weapons).slice(0, 3);
-            const availableItems = shuffleArray(items).slice(0, 4);
-            
-            // Ajouter les armes au DOM
-            availableWeapons.forEach(weapon => {
-                const itemElement = createShopItem(weapon, playerCoins);
-                weaponsGrid.appendChild(itemElement);
-            });
-            
-            // Ajouter les items au DOM
-            availableItems.forEach(item => {
-                const itemElement = createShopItem(item, playerCoins);
-                itemsGrid.appendChild(itemElement);
-            });
-        }
-        
-        function createShopItem(item, playerCoins) {
-            const itemElement = document.createElement('div');
-            itemElement.className = 'shop-item';
-            itemElement.dataset.id = item.id;
-            itemElement.dataset.stats = JSON.stringify(item.stats);
-            itemElement.dataset.price = item.price;
-            
-            // Vérifier si le joueur peut acheter cet item
-            const canBuy = playerCoins >= item.price;
-            if (!canBuy) {
-                itemElement.classList.add('unaffordable');
-            }
-            
-            itemElement.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
-                <div class="item-info">
-                    <h3>${item.name}</h3>
-                    <p class="price">${item.price} coins</p>
-                </div>
-            `;
-            
-            // Ajouter l'événement d'achat
-            if (canBuy) {
-                itemElement.addEventListener('click', function() {
-                    buyItem(item);
-                });
-            }
-            
-            return itemElement;
-        }
-        
-        function buyItem(item) {
-            const cost = item.cost;
-            
-            if (coinManager.spendCoins(cost)) {
-                // Purchase successful
-                // Give the item to the player
-                updateShopUI(); // Update the UI to show new balance
-            } else {
-                // Not enough coins
-                displayErrorMessage("Not enough coins!");
-            }
-        }
-        
-        function updatePlayerStats(itemStats) {
-            const playerStats = JSON.parse(localStorage.getItem('playerStats') || '[100,5,1,1,1,1,1]');
-            
-            // Ajouter les stats de l'item aux stats du joueur
-            const updatedStats = playerStats.map((stat, index) => stat + itemStats[index]);
-            
-            // Sauvegarder les nouvelles stats
-            localStorage.setItem('playerStats', JSON.stringify(updatedStats));
-            
-            // Mettre à jour l'affichage
-            document.getElementById('stat-health').textContent = updatedStats[0];
-            document.getElementById('stat-regen').textContent = updatedStats[1];
-            // Continuer avec les autres stats...
-        }
-        
-        function shuffleArray(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
-    </script>
+    <script src="./assets/js/weapon.js"></script>
+    <script src="./assets/js/inventory.js"></script>
+    <script src="./assets/js/shop.js"></script>
 </body>
 </html>
